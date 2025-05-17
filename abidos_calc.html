@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>아비도스 융화재료 계산기</title>
+</head>
+<body>
+  <h2>📦 아비도스 융화재료 계산기</h2>
+  <label>일반 목재: <input id="gw" type="number"></label><br>
+  <label>부드러운 목재: <input id="sw" type="number"></label><br>
+  <label>아비도스 목재: <input id="abidos" type="number"></label><br><br>
+  <button onclick="calculate()">계산하기</button>
+  <pre id="result" style="background:#f9f9f9; padding:10px; border:1px solid #ccc; margin-top:10px;"></pre>
+
+  <script>
+    function calculate() {
+      const gw_total = parseInt(document.getElementById("gw").value);
+      const sw_total = parseInt(document.getElementById("sw").value);
+      const abidos_init = parseInt(document.getElementById("abidos").value);
+      let maxCount = 0, bestGw = 0, bestSw = 0, bestAbidos = 0;
+
+      for (let gwUsed = 0; gwUsed <= gw_total; gwUsed += 100) {
+        for (let swUsed = 0; swUsed <= sw_total; swUsed += 50) {
+          let powder = Math.floor(gwUsed / 100) * 80 + Math.floor(swUsed / 50) * 80;
+          let abidosGained = Math.floor(powder / 100) * 10;
+          let abidosTotal = abidos_init + abidosGained;
+          let gwLeft = gw_total - gwUsed;
+          let swLeft = sw_total - swUsed;
+
+          let count = Math.min(
+            Math.floor(gwLeft / 86),
+            Math.floor(swLeft / 45),
+            Math.floor(abidosTotal / 33)
+          );
+
+          if (count > maxCount) {
+            maxCount = count;
+            bestGw = gwUsed;
+            bestSw = swUsed;
+            bestAbidos = abidosTotal;
+          }
+        }
+      }
+
+      const fusionCount = maxCount * 10;
+      const goldCost = maxCount * 384;
+      const gwRemaining = gw_total - bestGw - maxCount * 86;
+      const swRemaining = sw_total - bestSw - maxCount * 45;
+      const abidosRemaining = bestAbidos - maxCount * 33;
+
+      const result = `
+💠 융화재료 제작 수: ${fusionCount}개
+🪓 벌목의 가루용 일반 목재: ${bestGw}
+🌲 벌목의 가루용 부드러운 목재: ${bestSw}
+🔁 획득한 아비도스 목재: ${bestAbidos - abidos_init}
+🪙 총 골드 소모: ${goldCost} G
+
+📦 남은 일반 목재: ${gwRemaining}
+📦 남은 부드러운 목재: ${swRemaining}
+📦 남은 아비도스 목재: ${abidosRemaining}
+      `;
+      document.getElementById("result").textContent = result;
+    }
+  </script>
+</body>
+</html>
