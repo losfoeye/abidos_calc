@@ -2,39 +2,62 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>아비도스 융화재료 계산기</title>
+  <title>상급 아비도스 융화재료 계산기</title>
 </head>
 <body>
-  <h2>📦 아비도스 융화재료 계산기</h2>
-  <label>일반 목재: <input id="gw" type="number"></label><br>
-  <label>부드러운 목재: <input id="sw" type="number"></label><br>
-  <label>아비도스 목재: <input id="abidos" type="number"></label><br><br>
+  <h2>📦 상급 아비도스 융화재료 계산기</h2>
+
+  <label>일반 목재:
+    <input id="gw" type="number">
+  </label><br>
+
+  <label>부드러운 목재:
+    <input id="sw" type="number">
+  </label><br>
+
+  <label>아비도스 목재:
+    <input id="abidos" type="number">
+  </label><br><br>
+
   <button onclick="calculate()">계산하기</button>
-  <pre id="result" style="background:#f9f9f9; padding:10px; border:1px solid #ccc; margin-top:10px;"></pre>
+
+  <pre id="result"
+       style="background:#f9f9f9; padding:12px; border:1px solid #ccc; margin-top:12px;">
+  </pre>
 
   <script>
     function calculate() {
       const gw_total = parseInt(document.getElementById("gw").value);
       const sw_total = parseInt(document.getElementById("sw").value);
       const abidos_init = parseInt(document.getElementById("abidos").value);
-      let maxCount = 0, bestGw = 0, bestSw = 0, bestAbidos = 0;
+
+      let maxCount = 0;
+      let bestGw = 0;
+      let bestSw = 0;
+      let bestAbidos = abidos_init;
 
       for (let gwUsed = 0; gwUsed <= gw_total; gwUsed += 100) {
         for (let swUsed = 0; swUsed <= sw_total; swUsed += 50) {
-          let powder = Math.floor(gwUsed / 100) * 80 + Math.floor(swUsed / 50) * 80;
-          let abidosGained = Math.floor(powder / 100) * 10;
-          let abidosTotal = abidos_init + abidosGained;
-          let gwLeft = gw_total - gwUsed;
-          let swLeft = sw_total - swUsed;
 
-          let count = Math.min(
-            Math.floor(gwLeft / 86),
-            Math.floor(swLeft / 45),
-            Math.floor(abidosTotal / 33)
+          const powder =
+            Math.floor(gwUsed / 100) * 80 +
+            Math.floor(swUsed / 50) * 80;
+
+          const abidosGained = Math.floor(powder / 100) * 10;
+          const abidosTotal = abidos_init + abidosGained;
+
+          const gwLeft = gw_total - gwUsed;
+          const swLeft = sw_total - swUsed;
+
+          // 🔥 변경된 제작 비율
+          const fusionCount = Math.min(
+            Math.floor(gwLeft / 112),
+            Math.floor(swLeft / 59),
+            Math.floor(abidosTotal / 43)
           );
 
-          if (count > maxCount) {
-            maxCount = count;
+          if (fusionCount > maxCount) {
+            maxCount = fusionCount;
             bestGw = gwUsed;
             bestSw = swUsed;
             bestAbidos = abidosTotal;
@@ -42,23 +65,27 @@
         }
       }
 
-      const fusionCount = maxCount * 10;
-      const goldCost = maxCount * 384;
-      const gwRemaining = gw_total - bestGw - maxCount * 86;
-      const swRemaining = sw_total - bestSw - maxCount * 45;
-      const abidosRemaining = bestAbidos - maxCount * 33;
+      const fusionItems = maxCount * 10;
+      const goldCost = maxCount * 447;
+
+      const gwRemain = gw_total - bestGw - maxCount * 112;
+      const swRemain = sw_total - bestSw - maxCount * 59;
+      const abidosRemain = bestAbidos - maxCount * 43;
 
       const result = `
-💠 융화재료 제작 수: ${fusionCount}개
-🪓 벌목의 가루용 일반 목재: ${bestGw}
-🌲 벌목의 가루용 부드러운 목재: ${bestSw}
-🔁 획득한 아비도스 목재: ${bestAbidos - abidos_init}
+💠 상급 융화재료 제작 수: ${fusionItems}개
+
+🪓 벌목용 일반 목재: ${bestGw}
+🌲 벌목용 부드러운 목재: ${bestSw}
+🔁 추가 확보 아비도스 목재: ${bestAbidos - abidos_init}
+
 🪙 총 골드 소모: ${goldCost} G
 
-📦 남은 일반 목재: ${gwRemaining}
-📦 남은 부드러운 목재: ${swRemaining}
-📦 남은 아비도스 목재: ${abidosRemaining}
+📦 남은 일반 목재: ${gwRemain}
+📦 남은 부드러운 목재: ${swRemain}
+📦 남은 아비도스 목재: ${abidosRemain}
       `;
+
       document.getElementById("result").textContent = result;
     }
   </script>
